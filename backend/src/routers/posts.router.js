@@ -14,11 +14,12 @@ router.route('/tag/:tagname')
 router.route('/:id')
   .get(postsController.getSinglePost);
 
+router.route('/user/:id')
+  .get(postsController.getUserPosts);
+
 router.route('/')
   .post(
     auth,
-    check('title', 'Enter a title with minimum 15 characters').isLength({ min: 15 }),
-    check('body', 'Enter a body with minimum 30 characters').isLength({ min: 30 }),
     postsController.addPost,
   );
 

@@ -49,6 +49,28 @@ exports.getTagPosts = asyncHandler(async (req, res) => {
   }
 });
 
+exports.getUserPosts = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    await postsService.retrieveUserPosts(
+      userId,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          return res.status(err.code).json(err);
+        }
+        return res.status(data.code).json(data);
+      },
+    );
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json(responseHandler(true, 500, 'Server Error', null));
+  }
+});
+
 exports.getSinglePost = asyncHandler(async (req, res) => {
   try {
     await postsService.retrieveOne(req.params.id, (err, data) => {

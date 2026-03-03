@@ -161,6 +161,62 @@ exports.retrieveAll = async (tagName = '') => {
   return postsMap;
 };
 
+exports.retrieveUserPosts = async (userId) => {
+  const query = {
+    distinct: true,
+    attributes: [
+      'id',
+      'user_id',
+      'views',
+      [Sequelize.literal('user.username'), 'username'],
+      [Sequelize.literal('user.gravatar'), 'gravatar'],
+      'created_at',
+      'updated_at',
+      'title',
+      'body',
+    ],
+    include: [
+      {
+        model: TagsModel,
+        required: false,
+        attributes: ['id', 'tagname'],
+      },
+      {
+        model: UsersModel,
+        required: false,
+        attributes: [],
+      },
+    ],
+    order: [['created_at', 'DESC']],
+    where: {
+      user_id: userId,
+    }
+  };
+
+  const posts = await PostsModel
+    .findAll(query)
+    .catch((error) => {
+      console.log(error);
+      throw new Error('Something went wrong!');
+    });
+
+  const postsMap = posts.map((post) => utils.array.sequelizeResponse(
+    post,
+    'id',
+    'user_id',
+    'views',
+    'title',
+    'body',
+    'tags',
+    'username',
+    'gravatar',
+    'created_at',
+    'updated_at',
+  ));
+
+  return postsMap;
+};
+
 exports.countCommentsForOne = async (postId) => await PostsModel.count({
   where: {
     id: postId,
