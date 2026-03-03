@@ -135,3 +135,15 @@ exports.retrieveAllTag = async (tagName, result) => {
 
   return result(null, responseHandler(true, 200, 'Success', response));
 };
+
+exports.retrieveUserPosts = async (userId, result) => {
+  const postsMap = await PostsRepository.retrieveUserPosts(userId);
+
+  const postCounts = await PostsRepository.countForAll();
+
+  const postCountsMap = postCounts.map((post) => utils.array.sequelizeResponse(post, 'id', 'answer_count', 'comment_count'));
+
+  const response = utils.array.mergeById(postsMap, postCountsMap);
+
+  return result(null, responseHandler(true, 200, 'Success', response));
+};
