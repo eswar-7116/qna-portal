@@ -17,7 +17,7 @@ const AnswerSection = ({getAnswers, answer, post: {post}}) => {
     // eslint-disable-next-line
   }, [getAnswers]);
 
-  const [sortType, setSortType] = useState('Newest');
+  const [sortType, setSortType] = useState('Votes');
 
   return (
     <>
@@ -28,7 +28,7 @@ const AnswerSection = ({getAnswers, answer, post: {post}}) => {
               <h2>Answers</h2>
             </div>
             <ButtonGroup
-              buttons={['Newest', 'Oldest']}
+              buttons={['Votes', 'Newest', 'Oldest']}
               selected={sortType}
               setSelected={setSortType}
             />
@@ -37,7 +37,7 @@ const AnswerSection = ({getAnswers, answer, post: {post}}) => {
         {answer.loading === null ? (
           <Spinner width='25px' height='25px' />
         ) : (
-          answer.answers?.sort(handleSorting(sortType)).map((answer, index) => (
+          [...answer.answers]?.sort(handleSorting(sortType)).map((answer, index) => (
             <div key={index} className='answers'>
               <AnswerItem answer={answer}/>
             </div>
