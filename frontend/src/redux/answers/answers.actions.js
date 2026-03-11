@@ -4,8 +4,9 @@ import {
   ANSWER_ERROR,
   ADD_ANSWER,
   DELETE_ANSWER,
+  UPDATE_ANSWER_VOTES,
 } from "./answers.types";
-import { allAnswersData, createSingleAnswer, deleteSingleAnswer } from "../../api/answersApi";
+import { allAnswersData, createSingleAnswer, deleteSingleAnswer, upvoteAnswer as apiUpvoteAnswer, downvoteAnswer as apiDownvoteAnswer } from "../../api/answersApi";
 
 export const getAnswers = (id) => async (dispatch) => {
   try {
@@ -63,6 +64,36 @@ export const deleteAnswer = (AnswerId) => async (dispatch) => {
     dispatch({
       type: ANSWER_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const upvoteAnswer = (id) => async (dispatch) => {
+  try {
+    const res = await apiUpvoteAnswer(id);
+    dispatch({
+      type: UPDATE_ANSWER_VOTES,
+      payload: { id, upvotes: res.data.data.upvotes, downvotes: res.data.data.downvotes },
+    });
+  } catch (err) {
+    dispatch({
+      type: ANSWER_ERROR,
+      payload: { msg: err.response?.statusText, status: err.response?.status },
+    });
+  }
+};
+
+export const downvoteAnswer = (id) => async (dispatch) => {
+  try {
+    const res = await apiDownvoteAnswer(id);
+    dispatch({
+      type: UPDATE_ANSWER_VOTES,
+      payload: { id, upvotes: res.data.data.upvotes, downvotes: res.data.data.downvotes },
+    });
+  } catch (err) {
+    dispatch({
+      type: ANSWER_ERROR,
+      payload: { msg: err.response?.statusText, status: err.response?.status },
     });
   }
 };

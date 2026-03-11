@@ -21,6 +21,6 @@ const sequelize = new Sequelize(config.DB.DATABASE, config.DB.USER, config.DB.PA
     },
   });
 
-(async () => await sequelize.sync())();
+(async () => await sequelize.sync({ alter: true }))();
 
 module.exports = sequelize;
