@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { deleteAnswer } from "../../../../redux/answers/answers.actions";
+import { deleteAnswer, upvoteAnswer, downvoteAnswer } from "../../../../redux/answers/answers.actions";
 
 import UpVote from "../../../../assets/ArrowUpLg.svg";
 import DownVote from "../../../../assets/ArrowDownLg.svg";
@@ -13,10 +13,15 @@ import censorBadWords from "../../../../utils/censorBadWords";
 
 const AnswerItem = ({
   deleteAnswer,
-  answer: { body, user_id, gravatar, id, created_at, username },
+  upvoteAnswer,
+  downvoteAnswer,
+  answer: { body, user_id, gravatar, id, created_at, username, upvotes, downvotes },
   post: { post },
   auth,
 }) => {
+  const upvotesArr = Array.isArray(upvotes) ? upvotes : [];
+  const downvotesArr = Array.isArray(downvotes) ? downvotes : [];
+  const voteCount = upvotesArr.length - downvotesArr.length;
   return (
     <>
       <div className="answer-layout">
@@ -25,15 +30,17 @@ const AnswerItem = ({
             <button
               className="vote-up"
               title="This answer is useful (click again to undo)"
+              onClick={() => upvoteAnswer(id)}
             >
-              <UpVote className="icon" />
+              <UpVote className={upvotesArr.includes(auth.user?.id) ? "icon active" : "icon"} />
             </button>
-            <div className="vote-count fc-black-500">0</div>
+            <div className="vote-count fc-black-500">{voteCount}</div>
             <button
               className="vote-down"
               title="This answer is not useful (click again to undo)"
+              onClick={() => downvoteAnswer(id)}
             >
-              <DownVote className="icon" />
+              <DownVote className={downvotesArr.includes(auth.user?.id) ? "icon active" : "icon"} />
             </button>
           </div>
         </div>
@@ -94,6 +101,8 @@ AnswerItem.propTypes = {
   post: PropTypes.object.isRequired,
   answer: PropTypes.object.isRequired,
   deleteAnswer: PropTypes.func.isRequired,
+  upvoteAnswer: PropTypes.func.isRequired,
+  downvoteAnswer: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -101,4 +110,4 @@ const mapStateToProps = (state) => ({
   post: state.post,
 });
 
-export default connect(mapStateToProps, { deleteAnswer })(AnswerItem);
+export default connect(mapStateToProps, { deleteAnswer, upvoteAnswer, downvoteAnswer })(AnswerItem);

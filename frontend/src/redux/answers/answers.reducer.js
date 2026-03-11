@@ -3,6 +3,7 @@ import {
   ANSWER_ERROR,
   ADD_ANSWER,
   DELETE_ANSWER,
+  UPDATE_ANSWER_VOTES,
 } from './answers.types';
 
 const initialState = {
@@ -13,6 +14,16 @@ const initialState = {
 
 export default function answers(state = initialState, action) {
   switch (action.type) {
+    case UPDATE_ANSWER_VOTES:
+      return {
+        ...state,
+        answers: state.answers.map((answer) =>
+          answer.id === action.payload.id
+            ? { ...answer, upvotes: action.payload.upvotes, downvotes: action.payload.downvotes }
+            : answer
+        ),
+        loading: false,
+      };
     case GET_ANSWERS:
       return {
         ...state,

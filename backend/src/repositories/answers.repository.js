@@ -54,6 +54,8 @@ exports.retrieveAll = async (postId, result) => {
       'post_id',
       'body',
       'created_at',
+      'upvotes',
+      'downvotes',
       [Sequelize.literal('user.username'), 'username'],
       [Sequelize.literal('user.gravatar'), 'gravatar'],
     ],
@@ -73,6 +75,8 @@ exports.retrieveAll = async (postId, result) => {
     'post_id',
     'body',
     'created_at',
+    'upvotes',
+    'downvotes',
     'username',
     'gravatar',
   ));
@@ -83,4 +87,50 @@ exports.retrieveAll = async (postId, result) => {
   }
 
   return result(null, responseHandler(true, 200, 'Success', queryResultMap));
+};
+
+exports.upvote = async (id, userId, result) => {
+  try {
+    const answer = await AnswersModel.findByPk(id);
+    if (!answer) return result(responseHandler(false, 404, 'Answer not found', null), null);
+    
+    let upvotes = Array.isArray(answer.upvotes) ? answer.upvotes : [];
+    let downvotes = Array.isArray(answer.downvotes) ? answer.downvotes : [];
+
+    if (upvotes.includes(userId)) {
+      upvotes = upvotes.filter(u => u !== userId);
+    } else {
+      upvotes.push(userId);
+      downvotes = downvotes.filter(u => u !== userId);
+    }
+
+    await answer.update({ upvotes, downvotes });
+    return result(null, responseHandler(true, 200, 'Upvoted', answer));
+  } catch (error) {
+    console.log(error);
+    return result(responseHandler(false, 500, 'Error upvoting', null), null);
+  }
+};
+
+exports.downvote = async (id, userId, result) => {
+  try {
+    const answer = await AnswersModel.findByPk(id);
+    if (!answer) return result(responseHandler(false, 404, 'Answer not found', null), null);
+
+    let upvotes = Array.isArray(answer.upvotes) ? answer.upvotes : [];
+    let downvotes = Array.isArray(answer.downvotes) ? answer.downvotes : [];
+
+    if (downvotes.includes(userId)) {
+      downvotes = downvotes.filter(u => u !== userId);
+    } else {
+      downvotes.push(userId);
+      upvotes = upvotes.filter(u => u !== userId);
+    }
+
+    await answer.update({ upvotes, downvotes });
+    return result(null, responseHandler(true, 200, 'Downvoted', answer));
+  } catch (error) {
+    console.log(error);
+    return result(responseHandler(false, 500, 'Error downvoting', null), null);
+  }
 };

@@ -12,6 +12,12 @@ const AnswersModel = db.define('answers', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  upvotes: {
+    type: DataTypes.JSON,
+  },
+  downvotes: {
+    type: DataTypes.JSON,
+  },
 }, {
   db,
   tableName: 'answers',

@@ -21,6 +21,8 @@ export const deleteSinglePost = config.BASE_URL + '/api/posts/{id}';
 export const allAnswersData = config.BASE_URL + '/api/posts/answers/{id}';
 export const createSingleAnswer = config.BASE_URL + '/api/posts/answers/{postId}';
 export const deleteSingleAnswer = config.BASE_URL + '/api/posts/answers/{AnswerId}';
+export const upvoteAnswerUrl = config.BASE_URL + '/api/posts/answers/{id}/upvote';
+export const downvoteAnswerUrl = config.BASE_URL + '/api/posts/answers/{id}/downvote';
 
 // Comments
 export const allCommentsData = config.BASE_URL + '/api/posts/comments/{id}';
