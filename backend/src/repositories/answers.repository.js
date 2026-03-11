@@ -94,8 +94,8 @@ exports.upvote = async (id, userId, result) => {
     const answer = await AnswersModel.findByPk(id);
     if (!answer) return result(responseHandler(false, 404, 'Answer not found', null), null);
     
-    let upvotes = Array.isArray(answer.upvotes) ? answer.upvotes : [];
-    let downvotes = Array.isArray(answer.downvotes) ? answer.downvotes : [];
+    let upvotes = Array.isArray(answer.upvotes) ? [...answer.upvotes] : [];
+    let downvotes = Array.isArray(answer.downvotes) ? [...answer.downvotes] : [];
 
     if (upvotes.includes(userId)) {
       upvotes = upvotes.filter(u => u !== userId);
@@ -117,8 +117,8 @@ exports.downvote = async (id, userId, result) => {
     const answer = await AnswersModel.findByPk(id);
     if (!answer) return result(responseHandler(false, 404, 'Answer not found', null), null);
 
-    let upvotes = Array.isArray(answer.upvotes) ? answer.upvotes : [];
-    let downvotes = Array.isArray(answer.downvotes) ? answer.downvotes : [];
+    let upvotes = Array.isArray(answer.upvotes) ? [...answer.upvotes] : [];
+    let downvotes = Array.isArray(answer.downvotes) ? [...answer.downvotes] : [];
 
     if (downvotes.includes(userId)) {
       downvotes = downvotes.filter(u => u !== userId);

@@ -19,6 +19,12 @@ const handleSorting = (sortType, page = '') => {
   const milliSecYear = 31540000000
 
   switch (temp) {
+    case 'Votes':
+      return (a, b) => {
+        const aUpvotes = Array.isArray(a.upvotes) ? a.upvotes.length : 0;
+        const bUpvotes = Array.isArray(b.upvotes) ? b.upvotes.length : 0;
+        return bUpvotes - aUpvotes;
+      };
     case 'Newest':
       return (a, b) => new Date(b.created_at) - new Date(a.created_at);
     case 'New':
