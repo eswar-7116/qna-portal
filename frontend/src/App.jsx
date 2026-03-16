@@ -12,6 +12,7 @@ import HomePage from './modules/HomePage/HomePage.component';
 import QuestionsPage from './modules/QuestionsPage/QuestionsPage.component';
 import AllTagsPage from './modules/AllTagsPage/AllTagsPage.component';
 import AllUsersPage from './modules/AllUsersPage/AllUsersPage.component';
+import CommunityPage from './modules/CommunityPage/CommunityPage.component';
 import Register from './modules/Register/Register.component';
 import Login from './modules/Login/Login.component';
 import Post from './modules/Post/Post.component';
@@ -66,6 +67,13 @@ const App = () => {
             title='Users - AskTribe'
           >
             <AllUsersPage/>
+          </LayoutRoute>
+          <LayoutRoute
+            exact
+            path='/communities'
+            title='Communities - AskTribe'
+          >
+            <CommunityPage/>
           </LayoutRoute>
           <BaseRoute
             exact

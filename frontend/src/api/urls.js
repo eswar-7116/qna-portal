@@ -17,6 +17,13 @@ export const userPostsData = config.BASE_URL + '/api/posts/user/{id}';
 export const createSinglePost = config.BASE_URL + '/api/posts';
 export const deleteSinglePost = config.BASE_URL + '/api/posts/{id}';
 
+// Communities
+export const communitiesData = config.BASE_URL + '/api/communities';
+export const communityMembersData = config.BASE_URL + '/api/communities/{id}/members';
+export const communityQuestionsData = config.BASE_URL + '/api/communities/{id}/questions';
+export const communityQuestionAnswersData = config.BASE_URL + '/api/communities/questions/{id}/answers';
+export const communityQuestionCommentsData = config.BASE_URL + '/api/communities/questions/{id}/comments';
+
 // Answers
 export const allAnswersData = config.BASE_URL + '/api/posts/answers/{id}';
 export const createSingleAnswer = config.BASE_URL + '/api/posts/answers/{postId}';

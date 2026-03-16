@@ -4,6 +4,7 @@ const postsController = require('./posts.controller');
 const tagsController = require('./tags.controller');
 const usersController = require('./users.controller');
 const authController = require('./auth.controller');
+const communitiesController = require('./communities.controller');
 
 module.exports = {
   answersController,
@@ -12,4 +13,5 @@ module.exports = {
   tagsController,
   usersController,
   authController,
+  communitiesController,
 };

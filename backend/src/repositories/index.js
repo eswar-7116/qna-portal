@@ -4,6 +4,7 @@ const AnswersRepository = require('./answers.repository');
 const CommentsRepository = require('./comments.repository');
 const TagsRepository = require('./tags.repository');
 const PostTagRepository = require('./posttag.repository');
+const CommunitiesRepository = require('./communities.repository');
 
 module.exports = {
   UsersRepository,
@@ -12,4 +13,5 @@ module.exports = {
   CommentsRepository,
   TagsRepository,
   PostTagRepository,
+  CommunitiesRepository,
 };

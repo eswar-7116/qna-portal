@@ -84,6 +84,13 @@ const MobileSideBar = (props) => {
 							>
 								<p>Users</p>
 							</NavLink>
+							<NavLink
+								activeClassName="active"
+								className="link"
+								to="/communities"
+							>
+								<p>Communities</p>
+							</NavLink>
 						</div>
 					</div>
 				</div>

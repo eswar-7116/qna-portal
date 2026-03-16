@@ -3,6 +3,7 @@ const answersService = require('./answers.service');
 const commentsService = require('./comments.service');
 const usersService = require('./users.service');
 const tagsService = require('./tags.service');
+const communitiesService = require('./communities.service');
 
 module.exports = {
   postsService,
@@ -10,4 +11,5 @@ module.exports = {
   commentsService,
   usersService,
   tagsService,
+  communitiesService,
 };

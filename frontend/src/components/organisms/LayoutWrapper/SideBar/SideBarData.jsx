@@ -11,4 +11,8 @@ export const SideBarData = [
     link: '/users',
     text: 'Users',
   },
+  {
+    link: '/communities',
+    text: 'Communities',
+  },
 ]
