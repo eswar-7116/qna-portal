@@ -5,7 +5,8 @@ import {
   createSingleAnswer as _createSingleAnswer,
   deleteSingleAnswer as _deleteSingleAnswer,
   upvoteAnswerUrl,
-  downvoteAnswerUrl
+  downvoteAnswerUrl,
+  answerRepliesData,
 } from './urls';
 
 export const allAnswersData = (id) => {
@@ -32,4 +33,18 @@ export const upvoteAnswer = (id) => {
 
 export const downvoteAnswer = (id) => {
   return axios.put(downvoteAnswerUrl.replace('{id}', id));
+}
+
+export const allAnswerRepliesData = (id) => {
+  return axios.get(answerRepliesData.replace('{id}', id));
+}
+
+export const createAnswerReply = (id, formData) => {
+  const config_headers = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  return axios.post(answerRepliesData.replace('{id}', id), formData, config_headers);
 }

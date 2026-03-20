@@ -3,6 +3,7 @@ const { PostsModel } = require('./posts.model');
 const { TagsModel } = require('./tags.model');
 const { PostTagModel } = require('./posttag.model');
 const { AnswersModel } = require('./answers.model');
+const { AnswerRepliesModel } = require('./answerReplies.model');
 const { CommentsModel } = require('./comments.model');
 const { CommunitiesModel } = require('./communities.model');
 const { CommunityMembersModel } = require('./communityMembers.model');
@@ -25,6 +26,11 @@ UsersModel.hasMany(AnswersModel, {
 });
 AnswersModel.belongsTo(UsersModel);
 
+UsersModel.hasMany(AnswerRepliesModel, {
+  foreignKey: { name: 'user_id', allowNull: false },
+});
+AnswerRepliesModel.belongsTo(UsersModel);
+
 PostsModel.hasMany(CommentsModel, {
   foreignKey: { name: 'post_id', allowNull: false },
 });
@@ -34,6 +40,14 @@ PostsModel.hasMany(AnswersModel, {
   foreignKey: { name: 'post_id', allowNull: false },
 });
 AnswersModel.belongsTo(PostsModel);
+
+AnswersModel.hasMany(AnswerRepliesModel, {
+  foreignKey: { name: 'answer_id', allowNull: false },
+  as: 'replies',
+});
+AnswerRepliesModel.belongsTo(AnswersModel, {
+  foreignKey: { name: 'answer_id', allowNull: false },
+});
 
 PostsModel.belongsToMany(TagsModel, { through: PostTagModel, foreignKey: { name: 'post_id', allowNull: false } });
 TagsModel.belongsToMany(PostsModel, { through: PostTagModel, foreignKey: { name: 'tag_id', allowNull: false } });
@@ -113,6 +127,7 @@ module.exports = {
   TagsModel,
   PostTagModel,
   AnswersModel,
+  AnswerRepliesModel,
   CommentsModel,
   CommunitiesModel,
   CommunityMembersModel,

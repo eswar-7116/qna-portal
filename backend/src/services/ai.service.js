@@ -3,8 +3,9 @@ const bcrypt = require('bcryptjs');
 
 const constantsHolder = require('../constants');
 const { UsersModel, AnswersModel } = require('../models');
+const { AnswerRepliesRepository } = require('../repositories');
 
-const DEFAULT_AI_USERNAME = 'asktribe_ai_assistant';
+const DEFAULT_AI_USERNAME = 'ramineni_ai';
 const DEFAULT_AI_PASSWORD = 'ai-assistant-not-for-login';
 const DEFAULT_OPENAI_MODEL = 'gpt-4o-mini';
 const DEFAULT_OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
@@ -13,11 +14,19 @@ const DEFAULT_GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 
 const STACK_OVERFLOW_STYLE_SYSTEM_PROMPT = [
   'You are a senior Stack Overflow style assistant for software questions.',
-  'Always answer briefly and directly.',
-  'Use this exact structure in markdown:',
-  '1) **Short answer**: one or two lines.',
-  '2) **Why**: one short reason tied to the question context.',
-  '3) **Fix**: up to 3 concise steps.',
+  'Never output hidden reasoning, chain-of-thought, or internal analysis.',
+  'For non-coding questions, answer somewhat briefly and directly in plain text.',
+  'For non-coding questions, do not use markdown, asterisks, bullet points, or numbering.',
+  'For non-coding questions, keep the response concise: around 4 to 6 simple sentences.',
+  'If the user asks a coding question, return a clean markdown answer in this structure:',
+  'One short plain explanation sentence before code (max 2 sentences).',
+  'Then sections per language or solution part using headings.',
+  'Under each section, include a fenced code block with explicit language tag.',
+  'For coding questions, provide a full working solution, not a partial snippet.',
+  'Include required imports, helper functions, and complete function/class definitions.',
+  'If a full app is too long, provide one complete runnable file with all required logic.',
+  'Do not truncate code intentionally. Prioritize completeness.',
+  'Do not include internal reasoning text such as "Reasoning:".',
   'No long introductions. No unnecessary explanation.',
 ].join('\n');
 
@@ -38,34 +47,45 @@ const buildPrompt = ({ title, body, tagName }) => {
   ].join('\n');
 };
 
+const buildReplyPrompt = ({ answerBody, replyBody }) => {
+  const cleanedAnswer = stripHtml(answerBody).slice(0, 1800);
+  const cleanedReply = stripHtml(replyBody).slice(0, 1200);
+
+  return [
+    'Respond briefly to this follow-up reply in a helpful and direct way.',
+    '',
+    `Original answer: ${cleanedAnswer}`,
+    `User follow-up: ${cleanedReply}`,
+  ].join('\n');
+};
+
 const createFallbackAnswer = ({ title, body }) => {
   const compactTitle = (title || '').trim();
   const compactBody = stripHtml(body).slice(0, 280);
   const normalized = `${compactTitle} ${compactBody}`.toLowerCase();
 
   if (normalized.includes('ram mandir') || normalized.includes('ayodhya')) {
+    return 'Ram Mandir is in Ayodhya, Uttar Pradesh, India.';
+  }
+
+  if (
+    normalized.includes('code')
+    || normalized.includes('function')
+    || normalized.includes('api')
+    || normalized.includes('query')
+  ) {
     return [
-      '**Short answer**: Ram Mandir (Ram Janmabhoomi Temple) is in Ayodhya, Uttar Pradesh, India.',
-      '',
-      '**Why**: Your question asks for the location directly.',
-      '',
-      '**Fix**:',
-      '1. Search for "Ram Janmabhoomi Ayodhya" on maps.',
-      '2. Check official temple timings before traveling.',
-      '3. Verify route and local guidance on visit day.',
+      'Language: javascript',
+      'Code:',
+      '```javascript',
+      'function solve(input) {',
+      '  return input;',
+      '}',
+      '```',
     ].join('\n');
   }
 
-  return [
-    `**Short answer**: Start with a direct fix for "${compactTitle || 'this question'}" using your post details.`,
-    '',
-    `**Why**: The body says: ${compactBody || 'question details'}. A minimal, context-specific correction is fastest.`,
-    '',
-    '**Fix**:',
-    '1. Reproduce the issue with a minimal example from title/body.',
-    '2. Apply one targeted change and retest immediately.',
-    '3. Share code/error output if you need a precise next step.',
-  ].join('\n');
+  return `Start with one direct fix for "${compactTitle || 'this question'}" and test again. If it still fails, verify the input and expected output step by step. Then share the exact error and a minimal code snippet for a more precise fix.`;
 };
 
 const resolveModelConfig = () => {
@@ -139,12 +159,12 @@ const generateAnswer = async ({ title, body, tagName }) => {
     };
 
     if (modelConfig.provider === 'groq') {
-      payload.max_completion_tokens = 700;
+      payload.max_completion_tokens = 2200;
       payload.top_p = 1;
       payload.reasoning_effort = 'medium';
       payload.stream = false;
     } else {
-      payload.max_tokens = 500;
+      payload.max_tokens = 1800;
     }
 
     const response = await axios.post(modelConfig.endpoint, payload, {
@@ -182,6 +202,34 @@ exports.createAssistantAnswer = async ({ postId, title, body, tagName }) => {
     });
   } catch (error) {
     console.log('AI answer save failed:', error.message);
+    return null;
+  }
+};
+
+exports.createAssistantReplyForAnswer = async ({ answerId, replyBody, answerBody }) => {
+  try {
+    const content = await generateAnswer({
+      title: 'Reply to follow-up question',
+      body: buildReplyPrompt({ answerBody, replyBody }),
+      tagName: 'follow-up',
+    });
+
+    if (!content) {
+      return null;
+    }
+
+    const assistant = await getAssistantUser();
+    if (!assistant) {
+      return null;
+    }
+
+    return await AnswerRepliesRepository.createInternal({
+      body: content,
+      userId: assistant.id,
+      answerId,
+    });
+  } catch (error) {
+    console.log('AI reply save failed:', error.message);
     return null;
   }
 };

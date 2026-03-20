@@ -134,3 +134,18 @@ exports.downvote = async (id, userId, result) => {
     return result(responseHandler(false, 500, 'Error downvoting', null), null);
   }
 };
+
+exports.findById = async (id) => AnswersModel.findOne({
+  where: { id },
+  attributes: [
+    'id',
+    'user_id',
+    'post_id',
+    'body',
+    [Sequelize.literal('user.username'), 'username'],
+  ],
+  include: {
+    model: UsersModel,
+    attributes: [],
+  },
+});

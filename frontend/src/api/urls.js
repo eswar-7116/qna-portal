@@ -30,6 +30,7 @@ export const createSingleAnswer = config.BASE_URL + '/api/posts/answers/{postId}
 export const deleteSingleAnswer = config.BASE_URL + '/api/posts/answers/{AnswerId}';
 export const upvoteAnswerUrl = config.BASE_URL + '/api/posts/answers/{id}/upvote';
 export const downvoteAnswerUrl = config.BASE_URL + '/api/posts/answers/{id}/downvote';
+export const answerRepliesData = config.BASE_URL + '/api/posts/answers/{id}/replies';
 
 // Comments
 export const allCommentsData = config.BASE_URL + '/api/posts/comments/{id}';

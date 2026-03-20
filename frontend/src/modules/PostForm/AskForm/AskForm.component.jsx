@@ -145,14 +145,28 @@ const AskForm = ({ addPost }) => {
               <p className="fc-error fw-bold ml8 mt4">{formErrors.tagname}</p>
             </div>
             <div className="ask-ai-grid">
-              <div className="ask-ai-label">Ask AI</div>
+              <div className="ask-ai-header">
+                <div className="ask-ai-label-wrap">
+                  <div className="ask-ai-label">Ask AI</div>
+                  <span className="ask-ai-badge">Auto answer</span>
+                </div>
+                <span className={`ask-ai-state ${askAi ? "on" : "off"}`}>
+                  {askAi ? "Enabled" : "Disabled"}
+                </span>
+              </div>
               <button
                 type="button"
                 className={`ask-ai-toggle ${askAi ? "enabled" : "disabled"}`}
                 onClick={onToggleAskAi}
                 aria-pressed={askAi}
+                aria-label="Toggle Ask AI auto answer"
               >
-                {askAi ? "Ask AI: ON" : "Ask AI: OFF"}
+                <span className="ask-ai-track">
+                  <span className="ask-ai-knob" />
+                </span>
+                <span className="ask-ai-toggle-text">
+                  {askAi ? "Ask AI is ON" : "Ask AI is OFF"}
+                </span>
               </button>
               <p className="ask-ai-desc">
                 {askAi
