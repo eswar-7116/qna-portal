@@ -12,6 +12,8 @@ const sequelize = new Sequelize(config.DB.DATABASE, config.DB.USER, config.DB.PA
     port: config.DB.PORT,
     define: {
       timestamps: false,
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_unicode_ci',
     },
     pool: {
       max: 5,
