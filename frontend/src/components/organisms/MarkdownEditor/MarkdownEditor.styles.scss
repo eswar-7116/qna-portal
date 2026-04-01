@@ -5,12 +5,13 @@
   font-size: inherit !important;
 
   .rich-text-editor-toolbar {
-    border-bottom: 1px solid var(--black-200);
+    border-bottom: 1px solid #3a3a4e;
     button {
       width: 32px;
     }
     button.button-format {
-      background: var(--white);
+      background: #1e1e2e;
+      border: 1px solid #3a3a4e;
       span {
         filter: invert(100%);
         -webkit-filter: invert(100%);
@@ -49,12 +50,14 @@
     .DraftEditor-root {
       pre {
         padding: 5px;
-        background-color: var(--black-100);
-        color: var(--black-800);
+        background-color: #1a1a2a;
+        color: #e2e4e8;
       }
 
       blockquote {
-        color: var(--black-800);
+        color: #e2e4e8;
+        border-left: 4px solid #3a3a4e;
+        padding-left: 12px;
       }
     }
   }

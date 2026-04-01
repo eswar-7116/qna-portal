@@ -90,7 +90,7 @@ const AskForm = ({ addPost }) => {
 
   return (
     <>
-      <form onSubmit={(e) => onSubmit(e)}>
+      <form className="post-form" onSubmit={(e) => onSubmit(e)}>
         <div className="question-form p16 s-card">
           <div className="question-layout">
             <div className="title-grid">
@@ -113,9 +113,9 @@ const AskForm = ({ addPost }) => {
               />
             </div>
             <div className="body-grid">
-              <label className="form-label s-label fc-black-800">
+              <label className="form-label s-label">
                 Body
-                <p className="body-desc fw-normal fs-caption fc-black-800">
+                <p className="body-desc fw-normal fs-caption">
                   Include all the information someone would need to answer your
                   question
                 </p>
