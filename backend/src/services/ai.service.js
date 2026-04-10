@@ -13,7 +13,7 @@ const DEFAULT_OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 const DEFAULT_GROQ_MODEL = 'openai/gpt-oss-20b';
 const DEFAULT_GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 
-const STACK_OVERFLOW_STYLE_SYSTEM_PROMPT = [
+const ESWAR_AI_SYSTEM_PROMPT = [
   'You are a senior Stack Overflow style assistant for questions asked in your platform called AskTribe.',
   'Never output hidden reasoning, chain-of-thought, or internal analysis.',
   'For non-coding questions, answer somewhat briefly and directly in plain text.',
@@ -31,16 +31,34 @@ const STACK_OVERFLOW_STYLE_SYSTEM_PROMPT = [
   'No long introductions. No unnecessary explanation.',
 ].join('\n');
 
+const RAMINENI_AI_SYSTEM_PROMPT = [
+  'You are ramineni_ai, a senior expert and highly detailed technical assistant for AskTribe.',
+  'Always provide very detailed, comprehensive, and exhaustive answers.',
+  'Structure your responses primarily using bullet points, numbered lists, and bold text for maximum clarity.',
+  'Explain complex topics step-by-step with great technical depth.',
+  'Break down your answer into logical sections using markdown headers.',
+  'For coding questions:',
+  '1. Provide a clear high-level overview of the implementation strategy.',
+  '2. Include complete, production-ready, and well-commented code blocks.',
+  '3. Provide a detailed bulleted list explaining the logic, key lines, and dependencies.',
+  '4. Discuss edge cases, performance trade-offs, and security considerations if applicable.',
+  'Ensure the user understands NOT just the "how" but also the "why".',
+  'Never be brief; prioritize detail and completeness in every response.',
+].join('\n');
+
 const stripHtml = (value = '') => value
   .replace(/<[^>]+>/g, ' ')
   .replace(/\s+/g, ' ')
   .trim();
 
-const buildPrompt = ({ title, body, tagName }) => {
+const buildPrompt = ({ title, body, tagName, assistantUsername }) => {
   const cleanedBody = stripHtml(body).slice(0, 2500);
+  const instruction = assistantUsername === SECOND_AI_USERNAME
+    ? 'Give a concise and practical answer for this question.'
+    : 'Give a very detailed, comprehensive, and technical answer for this question using bullet points.';
 
   return [
-    'Give a concise and practical answer for this question.',
+    instruction,
     '',
     `Question title: ${title}`,
     `Question body: ${cleanedBody}`,
@@ -48,12 +66,15 @@ const buildPrompt = ({ title, body, tagName }) => {
   ].join('\n');
 };
 
-const buildReplyPrompt = ({ answerBody, replyBody }) => {
+const buildReplyPrompt = ({ answerBody, replyBody, assistantUsername }) => {
   const cleanedAnswer = stripHtml(answerBody).slice(0, 1800);
   const cleanedReply = stripHtml(replyBody).slice(0, 1200);
+  const instruction = assistantUsername === SECOND_AI_USERNAME
+    ? 'Respond briefly to this follow-up reply in a helpful and direct way.'
+    : 'Provide a detailed and thorough response to this follow-up reply, breaking it down into technical points.';
 
   return [
-    'Respond briefly to this follow-up reply in a helpful and direct way.',
+    instruction,
     '',
     `Original answer: ${cleanedAnswer}`,
     `User follow-up: ${cleanedReply}`,
@@ -180,17 +201,26 @@ const generateAnswer = async ({ title, body, tagName, assistantUsername }) => {
   }
 
   for (const modelConfig of modelConfigs) {
+    const systemPrompt = assistantUsername === SECOND_AI_USERNAME
+      ? ESWAR_AI_SYSTEM_PROMPT
+      : RAMINENI_AI_SYSTEM_PROMPT;
+
     const payload = {
       model: modelConfig.model,
       temperature: 0.4,
       messages: [
         {
           role: 'system',
-          content: STACK_OVERFLOW_STYLE_SYSTEM_PROMPT,
+          content: systemPrompt,
         },
         {
           role: 'user',
-          content: buildPrompt({ title, body, tagName }),
+          content: buildPrompt({
+            title,
+            body,
+            tagName,
+            assistantUsername,
+          }),
         },
       ],
     };
@@ -268,7 +298,7 @@ exports.createAssistantReplyForAnswer = async ({
   try {
     const content = await generateAnswer({
       title: 'Reply to follow-up question',
-      body: buildReplyPrompt({ answerBody, replyBody }),
+      body: buildReplyPrompt({ answerBody, replyBody, assistantUsername }),
       tagName: 'follow-up',
       assistantUsername,
     });
